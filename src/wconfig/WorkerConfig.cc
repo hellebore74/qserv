@@ -74,7 +74,8 @@ WorkerConfig::WorkerConfig(const util::ConfigStore& configStore)
                   configStore.getInt("sqlconnections.reservedinteractivesqlconn", 50)),
           _bufferMaxTotalGB(configStore.getInt("transmit.buffermaxtotalgb", 41)),
           _maxTransmits(configStore.getInt("transmit.maxtransmits", 40)),
-          _maxPerQid(configStore.getInt("transmit.maxperqid", 3)) {
+          _maxPerQid(configStore.getInt("transmit.maxperqid", 3)),
+          _resultsDirname(configStore.get("results.dirname", "/qserv/data/results")) {
     int mysqlPort = configStore.getInt("mysql.port");
     std::string mysqlSocket = configStore.get("mysql.socket");
     if (mysqlPort == 0 && mysqlSocket.empty()) {
