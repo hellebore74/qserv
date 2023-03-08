@@ -196,6 +196,22 @@ RUN dnf install -y 'dnf-command(config-manager)' \
     && dnf clean all \
     && rm -rf /var/cache/yum
 
+ENV ARROW_VERSION 11.0.0
+
+RUN dnf update -y \
+    && dnf install -y \
+       https://apache.jfrog.io/artifactory/arrow/almalinux/$(cut -d: -f5 /etc/system-release-cpe | cut -d. -f1)/apache-arrow-release-latest.rpm \
+    && dnf config-manager --set-enabled epel \
+    && dnf config-manager --set-enabled powertools \
+    && dnf install -y arrow-devel-$ARROW_VERSION \
+    && dnf install -y arrow-dataset-devel-$ARROW_VERSION \
+    && dnf install -y arrow-flight-devel-$ARROW_VERSION \
+    && dnf install -y gandiva-devel-$ARROW_VERSION \
+    && dnf install -y parquet-devel-$ARROW_VERSION \
+    && dnf clean all \
+    && rm -rf /var/cache/yum
+
+
 RUN useradd --create-home --uid 1000 --shell /bin/bash qserv
 WORKDIR /home/qserv
 
