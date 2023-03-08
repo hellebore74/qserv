@@ -184,6 +184,7 @@ void TransmitData::initResult(Task& task) {
     if (task.msg->has_session()) {
         _result->set_session(task.msg->session());
     }
+    _result->set_fileresource(task.fileResourceName());
 }
 
 bool TransmitData::hasErrormsg() const { return _result->has_errormsg(); }

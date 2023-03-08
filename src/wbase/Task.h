@@ -137,7 +137,8 @@ public:
     };
 
     explicit Task(TaskMsgPtr const& t, std::string const& query, int fragmentNumber,
-                  std::shared_ptr<ChannelShared> const& sc);
+                  std::shared_ptr<ChannelShared> const& sc,
+                  std::string const& resultsDirname = std::string());
     Task& operator=(const Task&) = delete;
     Task(const Task&) = delete;
     virtual ~Task();
@@ -147,7 +148,8 @@ public:
                                         std::shared_ptr<wbase::ChannelShared> const& sendChannel,
                                         std::shared_ptr<wdb::ChunkResourceMgr> const& chunkResourceMgr,
                                         mysql::MySqlConfig const& mySqlConfig,
-                                        std::shared_ptr<wcontrol::SqlConnMgr> const& sqlConnMgr);
+                                        std::shared_ptr<wcontrol::SqlConnMgr> const& sqlConnMgr,
+                                        std::string const& resultsDirname = std::string());
 
     void setQueryStatistics(std::shared_ptr<wpublish::QueryStatistics> const& qC);
 
@@ -169,6 +171,7 @@ public:
 
     std::string getQueryString() { return _queryString; }
     int getQueryFragmentNum() { return _queryFragmentNum; }
+    std::string const& fileResourceName() const { return _fileResourceName; }
     bool setTaskQueryRunner(
             TaskQueryRunner::Ptr const& taskQueryRunner);  ///< return true if already cancelled.
     void freeTaskQueryRunner(TaskQueryRunner* tqr);
@@ -238,8 +241,9 @@ private:
     int const _attemptCount = 0;  // attemptCount from czar
     /// _idStr for logging only.
     std::string const _idStr = makeIdStr(true);
-    std::string _queryString;   ///< The query this task will run.
-    int _queryFragmentNum = 0;  ///< The fragment number of the query in the task message.
+    std::string _queryString;             ///< The query this task will run.
+    int _queryFragmentNum = 0;            ///< The fragment number of the query in the task message.
+    std::string const _fileResourceName;  ///< The name of the XROOTD file resource for results
 
     std::atomic<bool> _cancelled{false};
     std::atomic<bool> _safeToMoveRunning{false};  ///< false until done with waitForMemMan().
