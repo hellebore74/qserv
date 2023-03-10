@@ -199,6 +199,10 @@ void InfileMerger::mergeCompleteFor(std::set<int> const& jobIds) {
     }
 }
 
+std::string const& InfileMerger::getXrootdFrontendUrl() const {
+    return _config.czarConfig.getXrootdFrontendUrl();
+}
+
 bool InfileMerger::merge(std::shared_ptr<proto::WorkerResponse> const& response) {
     if (!response) {
         LOGS(_log, LOG_LVL_ERROR, "merge response unset");

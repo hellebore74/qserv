@@ -192,6 +192,9 @@ public:
     /// @return final target table name  storing results after post processing
     std::string getTargetTable() const { return _config.targetTable; }
 
+    /// @return the frontend URL for XROOTD
+    std::string const& getXrootdFrontendUrl() const;
+
     /// Finalize a "merge" and perform postprocessing.
     /// `collectedBytes` is the number of bytes collected in worker results for
     ///    this user query. Its value is set by this function.

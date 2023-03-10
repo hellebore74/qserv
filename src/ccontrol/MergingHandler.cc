@@ -27,6 +27,9 @@
 // System headers
 #include <cassert>
 
+// Third-party headers
+#include "XrdCl/XrdClFile.hh"
+
 // LSST headers
 #include "lsst/log/Log.h"
 
@@ -52,7 +55,39 @@ using namespace std;
 
 namespace {
 LOG_LOGGER _log = LOG_GET("lsst.qserv.ccontrol.MergingHandler");
+
+void readFileResource(lsst::qserv::proto::Result const& result, string const& xrootdFrontendUrl) {
+    string const context = "MergingHandler::" + string(__func__) + " ";
+    string const url = "xroot://" + xrootdFrontendUrl + result.fileresource();
+    LOGS(_log, LOG_LVL_DEBUG, context << "file resource url: " << url);
+    XrdCl::File file;
+    XrdCl::XRootDStatus const status = file.Open(url, XrdCl::OpenFlags::Read);
+    if (!status.IsOK()) {
+        LOGS(_log, LOG_LVL_ERROR, context << "failed to open " << url);
+        return;
+    }
+    constexpr uint32_t size = 1024;
+    char buf[size];
+    uint64_t offset = 0;
+    while (true) {
+        uint32_t bytesRead = 0;
+        XrdCl::XRootDStatus const status = file.Read(offset, size, buf, bytesRead);
+        if (!status.IsOK()) {
+            LOGS(_log, LOG_LVL_ERROR, context << "failed to read from " << url);
+            return;
+        }
+        if (bytesRead == 0) break;
+        offset += bytesRead;
+    }
+    LOGS(_log, LOG_LVL_DEBUG, context << "read " << offset << " bytes from " << url);
+    if (!file.Close().IsOK()) {
+        LOGS(_log, LOG_LVL_ERROR, context << "failed to close " << url);
+    }
+    // TODO:
+    // 1. delete resource when done
+    // 2. make sure the function gets called after the last result received from a worker
 }
+}  // namespace
 
 namespace lsst::qserv::ccontrol {
 
@@ -155,6 +190,12 @@ bool MergingHandler::flush(int bLen, BufPtr const& bufPtr, bool& last, int& next
             int jobId = _response->result.jobid();
             _jobIds.insert(jobId);
             LOGS(_log, LOG_LVL_DEBUG, "Flushed last=" << last << " for tableName=" << _tableName);
+
+            // TODO: This is just a test for extracting and deleting file-based results
+            // via the base XROOTD protocol. The result file will be read into memory.
+            // The content of the file fill be parsed and inspected. After that XROOTD
+            // will be instaructed to destroy the resource.
+            ::readFileResource(_response->result, _infileMerger->getXrootdFrontendUrl());
 
             auto success = _merge();
             _response.reset(new WorkerResponse());
