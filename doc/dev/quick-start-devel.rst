@@ -17,6 +17,7 @@ Bootstrap a development environment
     # Clone qserv and its submodules
     git clone --recursive https://github.com/lsst/qserv
     cd qserv
+    export PATH=${PWD}/admin/local/cli:${PATH}
     # Build Qserv base images
     qserv build-images
     # Build Qserv user image
