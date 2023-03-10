@@ -63,11 +63,9 @@ RUN dnf update -y \
        https://apache.jfrog.io/artifactory/arrow/almalinux/$(cut -d: -f5 /etc/system-release-cpe | cut -d. -f1)/apache-arrow-release-latest.rpm \
     && dnf config-manager --set-enabled epel \
     && dnf config-manager --set-enabled powertools \
-    && dnf install -y arrow-devel-$ARROW_VERSION \
-    && dnf install -y arrow-dataset-devel-$ARROW_VERSION \
-    && dnf install -y arrow-flight-devel-$ARROW_VERSION \
-    && dnf install -y gandiva-devel-$ARROW_VERSION \
-    && dnf install -y parquet-devel-$ARROW_VERSION \
+    && dnf install -y \
+      arrow-devel-$ARROW_VERSION \
+      parquet-devel-$ARROW_VERSION \
     && dnf clean all \
     && rm -rf /var/cache/yum
 
@@ -219,11 +217,8 @@ RUN dnf update -y \
        https://apache.jfrog.io/artifactory/arrow/almalinux/$(cut -d: -f5 /etc/system-release-cpe | cut -d. -f1)/apache-arrow-release-latest.rpm \
     && dnf config-manager --set-enabled epel \
     && dnf config-manager --set-enabled powertools \
-    && dnf install -y arrow-devel-$ARROW_VERSION \
-    && dnf install -y arrow-dataset-devel-$ARROW_VERSION \
-    && dnf install -y arrow-flight-devel-$ARROW_VERSION \
-    && dnf install -y gandiva-devel-$ARROW_VERSION \
-    && dnf install -y parquet-devel-$ARROW_VERSION \
+    && dnf install -y arrow11-libs-$ARROW_VERSION \
+    && dnf install -y parquet11-libs-$ARROW_VERSION \
     && dnf clean all \
     && rm -rf /var/cache/yum
 
